@@ -1,6 +1,6 @@
+
 import { Link } from 'react-router-dom';
 import { Dumbbell, HeartPulse, Target, Activity } from 'lucide-react';
-import BeforeAfterResults from '../components/BeforeAfterResults';
 
 const Index = () => {
   return (
@@ -92,9 +92,6 @@ const Index = () => {
           </div>
         </div>
       </div>
-
-      {/* Before and After Results Section */}
-      <BeforeAfterResults />
 
       {/* Pricing Preview Section */}
       <div className="py-20">
