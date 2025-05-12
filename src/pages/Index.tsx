@@ -11,7 +11,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Track Your Fitness Journey With <span className="text-fitforge-red">FitForge</span>
+                Track Your Fitness Journey With <span className="text-fitforge-red">RAW PERFORMANCE</span>
               </h1>
               <p className="text-xl mb-8 text-gray-300">
                 Log workouts, set goals, and visualize your progress all in one place. Take control of your fitness today.
@@ -45,7 +45,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Track, Analyze, Improve</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              FitForge gives you all the tools you need to reach your fitness goals, track your progress, and stay motivated.
+              RAW PERFORMANCE gives you all the tools you need to reach your fitness goals, track your progress, and stay motivated.
             </p>
           </div>
           
@@ -247,7 +247,7 @@ const Index = () => {
         <div className="fitforge-container text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Start Your Fitness Journey?</h2>
           <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Join FitForge today and take the first step towards reaching your fitness goals.
+            Join RAW PERFORMANCE today and take the first step towards reaching your fitness goals.
           </p>
           <Link
             to="/register"

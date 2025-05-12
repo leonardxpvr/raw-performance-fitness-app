@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center">
               <Dumbbell className="h-6 w-6 text-fitforge-red" />
-              <span className="ml-2 text-xl font-bold">FitForge</span>
+              <span className="ml-2 text-xl font-bold">RAW PERFORMANCE</span>
             </Link>
             <p className="mt-4 text-sm text-gray-400">
               Track your workouts, set goals, and forge your fitness journey.
@@ -45,7 +45,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} FitForge. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} RAW PERFORMANCE. All rights reserved.</p>
         </div>
       </div>
     </footer>
