@@ -12,12 +12,12 @@ const Navbar = () => {
           <img 
             src="/lovable-uploads/eb192825-20ed-4427-8738-b57ed0a90ca3.png" 
             alt="RAW PERFORMANCE" 
-            className="h-16 md:h-20" // Increased from h-10 to h-16/h-20
+            className="h-10" 
           />
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center space-x-8">
           <Link to="/workouts" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
             Workouts
           </Link>
