@@ -1,25 +1,37 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, X, Save, Check, Target, Calendar, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/providers/AuthProvider';
+import { toast } from '@/components/ui/use-toast';
 
 interface Goal {
   id: string;
+  user_id: string;
   title: string;
   description: string;
-  targetDate: string;
+  target_date: string;
   category: string;
   completed: boolean;
   progress: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 const Goals = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
   const [currentGoal, setCurrentGoal] = useState<Goal>({
     id: '',
+    user_id: '',
     title: '',
     description: '',
-    targetDate: '',
+    target_date: '',
     category: '',
     completed: false,
     progress: 0
@@ -30,32 +42,119 @@ const Goals = () => {
     'Flexibility', 'General Fitness', 'Other'
   ];
 
-  const handleSaveGoal = () => {
-    const goalToSave = {
-      ...currentGoal,
-      id: currentGoal.id || Date.now().toString()
-    };
-    
-    if (currentGoal.id) {
-      // Update existing goal
-      setGoals(goals.map(g => 
-        g.id === currentGoal.id ? goalToSave : g
-      ));
-    } else {
-      // Add new goal
-      setGoals([...goals, goalToSave]);
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (user === null && !loading) {
+      navigate('/login');
     }
-    
-    setShowModal(false);
-    setCurrentGoal({
-      id: '',
-      title: '',
-      description: '',
-      targetDate: '',
-      category: '',
-      completed: false,
-      progress: 0
-    });
+
+    // Fetch goals if user is authenticated
+    if (user) {
+      fetchGoals();
+    }
+  }, [user, navigate]);
+
+  const fetchGoals = async () => {
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('goals')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      setGoals(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error fetching goals",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveGoal = async () => {
+    try {
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to save goals",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      const goalToSave = {
+        ...currentGoal,
+        user_id: user.id,
+      };
+      
+      let response;
+      
+      if (currentGoal.id) {
+        // Update existing goal
+        response = await supabase
+          .from('goals')
+          .update({
+            title: goalToSave.title,
+            description: goalToSave.description,
+            target_date: goalToSave.target_date,
+            category: goalToSave.category,
+            completed: goalToSave.completed,
+            progress: goalToSave.progress,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentGoal.id)
+          .select();
+      } else {
+        // Add new goal
+        response = await supabase
+          .from('goals')
+          .insert([{
+            title: goalToSave.title,
+            description: goalToSave.description,
+            target_date: goalToSave.target_date,
+            category: goalToSave.category,
+            completed: goalToSave.completed,
+            progress: goalToSave.progress,
+            user_id: user.id
+          }])
+          .select();
+      }
+      
+      if (response.error) throw response.error;
+      
+      toast({
+        title: currentGoal.id ? "Goal updated" : "Goal created",
+        description: currentGoal.id ? "Your goal has been updated successfully" : "Your new goal has been created",
+      });
+      
+      // Refresh goals
+      fetchGoals();
+      
+      // Reset and close modal
+      setShowModal(false);
+      setCurrentGoal({
+        id: '',
+        user_id: '',
+        title: '',
+        description: '',
+        target_date: '',
+        category: '',
+        completed: false,
+        progress: 0
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error saving goal",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEditGoal = (goal: Goal) => {
@@ -63,25 +162,96 @@ const Goals = () => {
     setShowModal(true);
   };
 
-  const handleDeleteGoal = (id: string) => {
-    setGoals(goals.filter(g => g.id !== id));
+  const handleDeleteGoal = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Goal deleted",
+        description: "Your goal has been deleted successfully",
+      });
+      
+      // Update local state
+      setGoals(goals.filter(g => g.id !== id));
+    } catch (error: any) {
+      toast({
+        title: "Error deleting goal",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleToggleComplete = (id: string) => {
-    setGoals(goals.map(goal => 
-      goal.id === id 
-        ? { ...goal, completed: !goal.completed, progress: !goal.completed ? 100 : goal.progress } 
-        : goal
-    ));
+  const handleToggleComplete = async (id: string, completed: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .update({
+          completed: !completed,
+          progress: !completed ? 100 : goals.find(g => g.id === id)?.progress || 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setGoals(goals.map(goal => 
+        goal.id === id 
+          ? { ...goal, completed: !completed, progress: !completed ? 100 : goal.progress } 
+          : goal
+      ));
+    } catch (error: any) {
+      toast({
+        title: "Error updating goal",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleUpdateProgress = (id: string, progress: number) => {
-    setGoals(goals.map(goal => 
-      goal.id === id 
-        ? { ...goal, progress, completed: progress === 100 } 
-        : goal
-    ));
+  const handleUpdateProgress = async (id: string, progress: number) => {
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .update({
+          progress,
+          completed: progress === 100,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setGoals(goals.map(goal => 
+        goal.id === id 
+          ? { ...goal, progress, completed: progress === 100 } 
+          : goal
+      ));
+    } catch (error: any) {
+      toast({
+        title: "Error updating progress",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
+
+  if (loading && !user) {
+    return (
+      <div className="py-12 bg-gray-50 min-h-screen">
+        <div className="fitforge-container text-center">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-12 bg-gray-50 min-h-screen">
@@ -119,7 +289,7 @@ const Goals = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start">
                     <button
-                      onClick={() => handleToggleComplete(goal.id)}
+                      onClick={() => handleToggleComplete(goal.id, goal.completed)}
                       className={`flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center mr-3 ${
                         goal.completed 
                           ? 'bg-green-500 border-green-500' 
@@ -152,7 +322,7 @@ const Goals = () => {
                 
                 <div className="flex items-center text-sm text-gray-500 mb-2">
                   <Calendar className="h-4 w-4 mr-2" />
-                  <span>Target: {goal.targetDate ? new Date(goal.targetDate).toLocaleDateString() : 'No date set'}</span>
+                  <span>Target: {goal.target_date ? new Date(goal.target_date).toLocaleDateString() : 'No date set'}</span>
                 </div>
                 
                 <div className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm mb-4">
@@ -259,8 +429,8 @@ const Goals = () => {
                     id="goalTargetDate"
                     type="date"
                     className="fitforge-input"
-                    value={currentGoal.targetDate}
-                    onChange={(e) => setCurrentGoal({...currentGoal, targetDate: e.target.value})}
+                    value={currentGoal.target_date}
+                    onChange={(e) => setCurrentGoal({...currentGoal, target_date: e.target.value})}
                   />
                 </div>
                 
