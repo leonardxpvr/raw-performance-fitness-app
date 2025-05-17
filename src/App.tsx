@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Workouts from "./pages/Workouts";
+import Programs from "./pages/Programs";
 import Goals from "./pages/Goals";
 import Progress from "./pages/Progress";
 import Subscription from "./pages/Subscription";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/workouts" element={<Layout><Workouts /></Layout>} />
+            <Route path="/programs" element={<Layout><Programs /></Layout>} />
             <Route path="/goals" element={<Layout><Goals /></Layout>} />
             <Route path="/progress" element={<Layout><Progress /></Layout>} />
             <Route path="/subscription" element={<Layout><Subscription /></Layout>} />

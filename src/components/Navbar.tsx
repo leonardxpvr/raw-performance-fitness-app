@@ -1,9 +1,16 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TrendingUp } from 'lucide-react';
+import { useAuth } from '@/providers/AuthProvider';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
+  
+  // Check if user is an admin (you'll need to implement this properly in your system)
+  // For now, assuming you'd have an admin flag in your user profile
+  const isAdmin = user?.email === 'admin@example.com'; // Temporary check - replace with actual admin verification
 
   return (
     <nav className="bg-white py-4 shadow-md">
@@ -24,6 +31,11 @@ const Navbar = () => {
           <Link to="/progress" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
             Progress
           </Link>
+          {isAdmin && (
+            <Link to="/programs" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
+              Programs
+            </Link>
+          )}
           <Link to="/subscription" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
             Subscription
           </Link>
@@ -72,6 +84,15 @@ const Navbar = () => {
             >
               Progress
             </Link>
+            {isAdmin && (
+              <Link 
+                to="/programs" 
+                className="block text-fitforge-black hover:text-fitforge-red py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Programs
+              </Link>
+            )}
             <Link 
               to="/subscription" 
               className="block text-fitforge-black hover:text-fitforge-red py-2"
