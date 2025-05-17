@@ -6,11 +6,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from "@/hooks/use-toast";
+import { Tables } from '@/integrations/supabase/types';
 
-interface Program {
+interface Program extends Tables<'programs'> {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   created_at: string;
 }
 
@@ -255,7 +256,7 @@ const Programs = () => {
                     id="description"
                     className="w-full rounded-md border border-gray-300 px-4 py-2"
                     rows={4}
-                    value={currentProgram.description}
+                    value={currentProgram.description || ''}
                     onChange={(e) => setCurrentProgram({...currentProgram, description: e.target.value})}
                   ></textarea>
                 </div>
