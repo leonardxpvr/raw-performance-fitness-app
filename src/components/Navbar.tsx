@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { TrendingUp } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -8,12 +8,9 @@ const Navbar = () => {
   return (
     <nav className="bg-white py-4 shadow-md">
       <div className="fitforge-container flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img 
-            src="/lovable-uploads/eb192825-20ed-4427-8738-b57ed0a90ca3.png" 
-            alt="RAW PERFORMANCE" 
-            className="h-10" 
-          />
+        <Link to="/" className="flex items-center gap-2">
+          <TrendingUp className="h-6 w-6 text-fitforge-red" />
+          <span className="font-bold text-xl text-fitforge-black">Let's Reach Your Goal!</span>
         </Link>
 
         {/* Desktop Navigation */}
