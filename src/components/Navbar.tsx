@@ -22,6 +22,9 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
+          <Link to="/programs" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
+            Programs
+          </Link>
           <Link to="/workouts" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
             Workouts
           </Link>
@@ -63,6 +66,13 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200 mt-2">
           <div className="fitforge-container py-2 space-y-2">
+            <Link 
+              to="/programs" 
+              className="block text-fitforge-black hover:text-fitforge-red py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Programs
+            </Link>
             <Link 
               to="/workouts" 
               className="block text-fitforge-black hover:text-fitforge-red py-2"
