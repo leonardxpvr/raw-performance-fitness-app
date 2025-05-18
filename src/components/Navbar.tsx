@@ -40,7 +40,7 @@ const Navbar = () => {
             Programs
           </Link>
           <Link to="/workouts" className="text-fitforge-black hover:text-fitforge-red transition-colors font-medium">
-            Workouts
+            Log Session
           </Link>
           {user && (
             <>
@@ -121,7 +121,7 @@ const Navbar = () => {
               className="block text-fitforge-black hover:text-fitforge-red py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Workouts
+              Log Session
             </Link>
             {user && (
               <>
